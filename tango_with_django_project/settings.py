@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rango',
 ]
-
+# urlpattern that matches admin/ within your project’s urls.py module
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -79,6 +79,7 @@ WSGI_APPLICATION = 'tango_with_django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# a default database that is powered by a lightweight database engine, SQLite (see the ENGINE option). The NAME entry for this database is the path to the database file, which is by default db.sqlite3 in the root of your Django project
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
