@@ -29,6 +29,5 @@ urlpatterns = [
     url(r'^$',views.index,name='index'),
     url(r'^rango/', include('rango.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^login/$', views.user_login, name='login'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)#tell Django to serve static content from MEDIA_URL
 # project’s settings.py module, you will notice that one of the preinstalled apps (within the INSTALLED_APPS list) is django.contrib.admin
