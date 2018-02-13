@@ -6,17 +6,29 @@ from django.http import HttpResponse
 from rango.models import Category
 
 from rango.models import Page
+from rango.forms import CategoryForm
+from rango.forms import PageForm
 
 def index(request):
+    request.session.set_test_cookie()
+    # ex 3
+    # return HttpResponse("<br>Rango says hey there partner!<br/><a href='/rango/about/'>About</a>")
+    
+    # Query the database for a list of ALL categories currently stored.
+    # Order the categories by no. likes in descending order.
+    # Retrieve the top 5 only - or all if less than 5.
+    # Place the list in our context_dict dictionary
+    # that will be passed to the template engine.
+    # ex 6
     category = Category.objects.order_by('-likes')[:5]
     page = Page.objects.order_by('-views')[:5]
     context_dict = {'categories': category,'pages': page}
     return render(request, 'rango/index.html' , context=context_dict)
+    # ex 4
+    # context_dict = {'boldmessage': "Crunchy, creamy, cookie, candy, cupcake!"}
+    # return render(request, 'rango/index.html', context=context_dict)
 
 def about(request):
-    if request.session.test_cookie_worked():
-        print("TEST COOKIE WORKED!")
-        request.session.delete_test_cookie()
 
     # ex 3
     #return HttpResponse("Rango says here is the about page.<a href='/rango/'>Index</a>")
@@ -50,3 +62,44 @@ def show_category(request, category_name_slug):
         context_dict['pages'] = None
     # Go render the response and return it to the client.
     return render(request, 'rango/category.html', context=context_dict)
+
+def add_category(request):
+    form = CategoryForm()
+        # A HTTP POST?
+    print(form)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        # Have we been provided with a valid form?
+        if form.is_valid():
+            # Save the new category to the database.
+            form.save(commit=True)
+            # Now that the category is saved
+            # We could give a confirmation message
+            # But since the most recent category added is on the index page
+            # Then we can direct the user back to the index page.
+            return index(request)
+        else:
+            # The supplied form contained errors -
+            # just print them to the terminal.
+            print(form.errors)
+    return render(request, 'rango/add_category.html', {'form': form})
+
+def add_page(request, category_name_slug):
+    try:
+        category = Category.objects.get(slug=category_name_slug)
+    except Category.DoesNotExist:
+        category = None
+    form = PageForm()
+    if request.method == 'POST':
+        form = PageForm(request.POST)
+        if form.is_valid():
+            if category:
+                page = form.save(commit=False)
+                page.category = category
+                page.views = 0
+                page.save()
+                return show_category(request, category_name_slug)
+        else:
+            print(form.errors)
+    context_dict = {'form':form, 'category': category}
+    return render(request, 'rango/add_page.html', context_dict)
