@@ -1,3 +1,0 @@
-I found errors while cloning your github repository: tango_with_django_project===========================================================================
-
-
